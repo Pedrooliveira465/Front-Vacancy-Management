@@ -1,6 +1,7 @@
 package br.com.pedrooliveira.front_vacancy_management.modules.company;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -73,9 +74,15 @@ public class CompanyController {
             return "redirect:/company/jobs";
 
         } catch (HttpClientErrorException e) {
-            redirectAttributes.addFlashAttribute("error_message", "Usuário/Senha incorretos");
+            redirectAttributes.addFlashAttribute("error_message", "Incorrect username/password");
             return "redirect:/company/jobs";
         }
+    }
+
+    @GetMapping("/jobs")
+    @PreAuthorize("hasRole('COMPANY')")
+    public String jobs() {
+        return "company/jobs";
     }
 
 }
