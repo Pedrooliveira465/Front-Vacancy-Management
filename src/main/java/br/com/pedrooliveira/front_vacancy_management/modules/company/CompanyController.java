@@ -91,28 +91,39 @@ public class CompanyController {
 
     @GetMapping("/jobs")
     @PreAuthorize("hasRole('COMPANY')")
-    public String jobs(Model model){
+    public String jobs(Model model) {
         model.addAttribute("jobs", new CreateJobsDTO());
         return "company/jobs";
     }
 
     @PostMapping("/jobs")
     @PreAuthorize("hasRole('COMPANY')")
-    public String createJobs(CreateJobsDTO jobs){
+    public String createJobs(CreateJobsDTO jobs) {
         var result = this.createJobService.execute(jobs, getToken());
         return "redirect:/company/jobs/list";
     }
 
     @GetMapping("/jobs/list")
     @PreAuthorize("hasRole('COMPANY')")
-    public String list(Model model){
+    public String list(Model model) {
         var result = this.listAllJobsCompanyService.execute(getToken());
         model.addAttribute("jobs", result);
         System.out.println(result);
         return "company/list";
     }
 
-    private String getToken(){
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+        session.setAttribute("token", null);
+
+        return "redirect:/company/login";
+    }
+
+    private String getToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getDetails().toString();
     }
